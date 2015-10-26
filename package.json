@@ -1,5 +1,5 @@
 {
-  "name": "simple-login",
+  "name": "cookies-sessions",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",

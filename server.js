@@ -10,7 +10,7 @@ var express = require('express'),
 var app = express();
 
 // connect to database and pull in model(s)
-mongoose.connect('mongodb://localhost/simple-login');
+mongoose.connect('mongodb://localhost/cookies-sessions');
 var User = require('./models/user');
 
 // middleware
@@ -31,7 +31,7 @@ app.get('/signup', function (req, res) {
   res.render('signup');
 });
 
-// create a user 
+// create a user
 app.post('/users', function (req, res) {
   console.log(req.body);
   User.createSecure(req.body.email, req.body.password, function (err, newUser) {
