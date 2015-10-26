@@ -23,6 +23,7 @@ app.use(session({
   secret: 'SuperSecretCookie',
   cookie: { maxAge: 30 * 60 * 1000 }
 }));
+// express-session has a touch option to update max age
 
 
 // show the signup form
@@ -32,7 +33,7 @@ app.get('/signup', function (req, res) {
 
 // create a user 
 app.post('/users', function (req, res) {
-  console.log(req.body)
+  console.log(req.body);
   User.createSecure(req.body.email, req.body.password, function (err, newUser) {
     req.session.userId = newUser._id;
     res.redirect('/profile');

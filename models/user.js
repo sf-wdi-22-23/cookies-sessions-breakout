@@ -2,12 +2,17 @@ var mongoose = require('mongoose'),
   Schema = mongoose.Schema,
   bcrypt = require('bcrypt');
 
-var UserSchema = new Schema({
-  email: String,
+// also see express heroku app (linked in funnybiz)
+var userSchema = new Schema({
+  email: { type: String,
+            required: true,
+            unique: true
+          },
   passwordDigest: String
 });
 
-serSchema.statics.createSecure = function (email, password, callback) {
+// use form data to create db user, with a hashed and salted password
+userSchema.statics.createSecure = function (email, password, callback) {
   // `this` references our User model
   // store it in variable `UserModel` because `this` changes context in nested callbacks
 
@@ -29,8 +34,10 @@ serSchema.statics.createSecure = function (email, password, callback) {
 
 
 // authenticate user (when user logs in)
-UserSchema.statics.authenticate = function (email, password, callback) {
+userSchema.statics.authenticate = function (email, password, callback) {
   // find user by email entered at log in
+  // remember, this is the User Model
+
   this.findOne({email: email}, function (err, foundUser) {
     console.log(foundUser);
 
@@ -48,12 +55,12 @@ UserSchema.statics.authenticate = function (email, password, callback) {
 };
 
 // compare password user enters with hashed password (`passwordDigest`)
-UserSchema.methods.checkPassword = function (password) {
+userSchema.methods.checkPassword = function (password) {
   // run hashing algorithm (with salt) on password user enters in order to compare with `passwordDigest`
   return bcrypt.compareSync(password, this.passwordDigest);
 };
 
-var User = mongoose.model('User', UserSchema);
+var User = mongoose.model('User', userSchema);
 
 // export user model
 module.exports = User;
