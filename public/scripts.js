@@ -1,6 +1,25 @@
 console.log('sanity check: client-side js loaded');
 
 $(document).ready(function() {
+  $('#session-form').on('submit', function(e) {
+    e.preventDefault();
+    console.log("submitted session form");
+    var formData = $(this).serialize();
+
+    $.post('/session-form', formData, function(response) {
+      console.log("server response is: ", response);
+    })
+  })
+
+  $('#cookie-form').on('submit', function(e) {
+    e.preventDefault();
+    console.log("submitted cookie form");
+    var formData = $(this).serialize();
+
+    $.post('/cookie-form', formData, function(response) {
+      console.log("server response is: ", response);
+    })
+  })
   // $('#signup-form').on('submit', function(e) {
   //   e.preventDefault();
 
