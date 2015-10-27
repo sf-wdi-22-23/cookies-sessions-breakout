@@ -7,9 +7,6 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
     session = require('express-session');
 
-// load environment variables
-require('dotenv').load();
-
 // create express app object
 var app = express();
 
@@ -26,6 +23,7 @@ app.set('view engine', 'ejs');
 app.use(cookieParser());
 
 app.use(session({
+    key: 'connect.sid', // default value
     secret: "secretstuff",
     saveUninitialized: true,
     resave: true,
@@ -43,55 +41,66 @@ app.use(bodyParser.urlencoded({
 // Routes requiring a session
 ////////////////
 app.get('/forms', function(req, res) {
-  console.log("req.cookies: ", req.cookies, "req.session: ", req.session);
-  var formCookie = req.cookies;
-  var formSession = req.session;
-  res.render('forms', {cookie: formCookie, session: formSession});
+    console.log("req.cookies: ", req.cookies, "req.session: ", req.session);
+    var formCookie = req.cookies;
+    var formSession = req.session;
+    res.render('forms', {
+        cookie: formCookie,
+        session: formSession
+    });
 })
 
 app.post('/cookie-form', function(req, res) {
-  console.log("req.body is: ", req.body)
-  var dough = req.body.dough || "";
-  var ingredient = req.body.ingredient || "";
-  console.log(dough, ingredient);
-  res.cookie("dough", dough);
-  res.cookie('ingredient', ingredient);
-  console.log("response cookies are: ", res.cookies);
-  // res.redirect('/forms');
-  res.json({cookies: res.cookies, session: req.session})
+    console.log("req.body is: ", req.body)
+    var dough = req.body.dough || "";
+    var ingredient = req.body.ingredient || "";
+    console.log(dough, ingredient);
+    res.cookie("dough", dough);
+    res.cookie('ingredient', ingredient);
+    console.log("response cookies are: ", res.cookies);
+    // res.redirect('/forms'); // redirecting via client
+    res.json({
+        cookies: res.cookies,
+        session: req.session
+    })
 })
 
 app.post('/session-form', function(req, res) {
-  var sessionForm = req.body;
-  req.session.location = sessionForm.location || "";
-  req.session.duration = sessionForm.duration || "";
-  // res.redirect('/forms');
-  res.json({cookies: res.cookies, session: req.session})
+    var sessionForm = req.body;
+    req.session.location = sessionForm.location || "";
+    req.session.duration = sessionForm.duration || "";
+    // res.redirect('/forms'); // redirecting via client
+    res.json({
+        cookies: res.cookies,
+        session: req.session
+    })
 })
 
 app.post('/long-form', function(req, res) {
-  var data = {
-    foo: req.body.foo || "",
-    bar: req.body.bar || "",
-    baz: req.body.baz || "",
-    how: req.body.how || "",
-    what: req.body.what || "",
-    when: req.body.when || "",
-  }
+    var data = {
+        foo: req.body.foo || "",
+        bar: req.body.bar || "",
+        baz: req.body.baz || "",
+        how: req.body.how || "",
+        what: req.body.what || "",
+        when: req.body.when || "",
+    }
 
-  for (key in data) {
-    res.cookie(key, data[key]);
-  }
-  res.json(data);
+    for (key in data) {
+        res.cookie(key, data[key]);
+    }
+    res.json(data);
 })
 
-app.get('/clear', function(req, res) {
-    console.log(res.cookies);
-    res.clearCookie('connect.sid');
-    // remove the session user id
-    req.session.userId = null;
-    // redirect to login
-    res.redirect('/login');
+app.delete('/clear', function(req, res) {
+    for (key in req.cookies) {
+        res.clearCookie(key, { path: '/'});
+    }
+    res.clearCookie('connect.sid', {path: '/'});
+    // remove the session
+    req.session = null;
+
+    res.json("cookies and sessions deleted");
 });
 
 // listen on port 3000
