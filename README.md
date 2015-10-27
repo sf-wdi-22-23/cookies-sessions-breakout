@@ -1,4 +1,4 @@
-# Authentication with Express & Bcrypt
+# Cookies and Sessions
 
 | Objectives |
 | :--- |
@@ -6,7 +6,7 @@
 | Store user information in a session cookie |
 | Show how to clear cookies and sessions |
 
-## Cookies and Sessions
+## What are Cookies and Sessions?
 
 - **Cookies** are small snippets of text, used as key-value pairs. Cookies are used to track state in web applications. Example uses include: remembering you as a user so you don't have to log in every time you visit a site, remembering what is in your shopping cart, remembering where you were in the process of completing a form.
 - **Sessions** are server-side based methods of tracking state. A session can be stored in the client as an encrypted cookie. However, it cannot be manipulated directly from the client, so it is more secure.
