@@ -43,6 +43,8 @@ $(document).ready(function() {
         })
             .done(function(response) {
                 console.log(response);
+                localStorage.clear();
+                sessionStorage.clear();
             })
         window.location.href = "/forms";
     })

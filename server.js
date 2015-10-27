@@ -41,24 +41,40 @@ app.use(bodyParser.urlencoded({
 // Routes requiring a session
 ////////////////
 app.get('/forms', function(req, res) {
-    console.log("req.cookies: ", req.cookies, "req.session: ", req.session);
+    console.log("req.cookies:\n ", req.cookies, "\nreq.session:\n ", req.session);
     var formCookie = req.cookies;
     var formSession = req.session;
+    // console.log("CURRENT SESSION COOKIE is:\n ", req.cookies['connect.sid']);
     res.render('forms', {
         cookie: formCookie,
         session: formSession
     });
 })
 
+// app.get('/cookie', function(req, res) {
+//   // set value of the cookie with a key of 'ingredient' to be 'vanilla'
+//   res.cookie("ingredient", 'vanilla');
+//   // rest of your server side code, for example:
+//   res.json(req.cookies.ingredient);
+// })
+
+// app.get('/no-cookie', function(req, res) {
+//   // clear the cookie
+//   res.clearCookie('ingredient', {path: '/'});
+//   // send back all remaining cookies
+//   res.json(req.cookies);
+// })
+
 app.post('/cookie-form', function(req, res) {
-    console.log("req.body is: ", req.body)
+    console.log("cookie form data is: ", req.body);
+
     var dough = req.body.dough || "";
     var ingredient = req.body.ingredient || "";
-    console.log(dough, ingredient);
     res.cookie("dough", dough);
     res.cookie('ingredient', ingredient);
+
     console.log("response cookies are: ", res.cookies);
-    // res.redirect('/forms'); // redirecting via client
+    // res.redirect('/forms'); // not using b/c redirecting via client
     res.json({
         cookies: res.cookies,
         session: req.session
@@ -67,9 +83,10 @@ app.post('/cookie-form', function(req, res) {
 
 app.post('/session-form', function(req, res) {
     var sessionForm = req.body;
+    console.log("session form data is: ", sessionForm);
     req.session.location = sessionForm.location || "";
     req.session.duration = sessionForm.duration || "";
-    // res.redirect('/forms'); // redirecting via client
+    // res.redirect('/forms'); // not using b/c redirecting via client
     res.json({
         cookies: res.cookies,
         session: req.session
@@ -77,6 +94,9 @@ app.post('/session-form', function(req, res) {
 })
 
 app.post('/long-form', function(req, res) {
+  // setting up object to provide default values for cookies
+  // this will populate the EJS form
+  // can be used for if a user accidentally navigates away from the page
     var data = {
         foo: req.body.foo || "",
         bar: req.body.bar || "",
@@ -85,7 +105,7 @@ app.post('/long-form', function(req, res) {
         what: req.body.what || "",
         when: req.body.when || "",
     }
-
+    // setting a cookie with name of key and value of that key's value
     for (key in data) {
         res.cookie(key, data[key]);
     }
@@ -96,6 +116,7 @@ app.delete('/clear', function(req, res) {
     for (key in req.cookies) {
         res.clearCookie(key, { path: '/'});
     }
+    console.log("SESSION COOKIE BEING DELETED", req.cookies['connect.sid']);
     res.clearCookie('connect.sid', {path: '/'});
     // remove the session
     req.session = null;
