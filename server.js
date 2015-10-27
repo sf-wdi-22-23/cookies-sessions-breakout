@@ -23,12 +23,10 @@ app.set('view engine', 'ejs');
 
 // tell app to use cookieParser
 // this is needed because express-session creates sessions that are stored as cookies
-app.use(cookieParser({
-    secret: process.env.COOKIE_SECRET
-}));
+app.use(cookieParser());
 
 app.use(session({
-    secret: process.env.COOKIE_SECRET,
+    secret: "secretstuff",
     saveUninitialized: true,
     resave: true,
     cookie: {
@@ -41,99 +39,55 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-// middleware function to verify a session with a userId exists
-function verifyUserInSession(req, res, next) {
-  console.log("The current session information is:\n\n", req.session);
-  if (req.session.userId) {
-    console.log("the current user has an id of: ", req.session.userId);
-  } else {
-    console.log("No userId present in session, redirecting to login.");
-    res.redirect('/login')
-  }
-  next()
-}
 ////////////////
 // Routes requiring a session
 ////////////////
-app.get('/forms', verifyUserInSession, function(req, res) {
+app.get('/forms', function(req, res) {
+  console.log("req.cookies: ", req.cookies, "req.session: ", req.session);
   var formCookie = req.cookies;
   var formSession = req.session;
   res.render('forms', {cookie: formCookie, session: formSession});
 })
 
 app.post('/cookie-form', function(req, res) {
-  var cookieForm = req.body;
-  req.cookie("dough", cookieForm.dough);
-  req.cookie('ingredient', cookieForm.ingredient);
-  res.json("Cookies updated, check your cookies");
+  console.log("req.body is: ", req.body)
+  var dough = req.body.dough || "";
+  var ingredient = req.body.ingredient || "";
+  console.log(dough, ingredient);
+  res.cookie("dough", dough);
+  res.cookie('ingredient', ingredient);
+  console.log("response cookies are: ", res.cookies);
+  // res.redirect('/forms');
+  res.json({cookies: res.cookies, session: req.session})
 })
 
 app.post('/session-form', function(req, res) {
   var sessionForm = req.body;
-  req.session.location = sessionForm.location;
-  req.session.duration = sessionForm.duration;
-  res.json(req.session);
+  req.session.location = sessionForm.location || "";
+  req.session.duration = sessionForm.duration || "";
+  // res.redirect('/forms');
+  res.json({cookies: res.cookies, session: req.session})
 })
 
-////////////
-// Open routes
-////////////
+app.post('/long-form', function(req, res) {
+  var data = {
+    foo: req.body.foo || "",
+    bar: req.body.bar || "",
+    baz: req.body.baz || "",
+    how: req.body.how || "",
+    what: req.body.what || "",
+    when: req.body.when || "",
+  }
 
-// show the signup form
-app.get('/signup', function(req, res) {
-    res.render('signup');
-});
+  for (key in data) {
+    res.cookie(key, data[key]);
+  }
+  res.json(data);
+})
 
-// create a user
-app.post('/users', function(req, res) {
-    console.log(req.body);
-    User.createSecure(req.body.email, req.body.password, function(err, newUser) {
-        req.session.userId = newUser._id;
-        res.redirect('/profile');
-    });
-});
-
-// show the login form
-app.get('/login', function(req, res) {
-    res.render('login');
-});
-
-// authenticate the user and set the session
-app.post('/sessions', function(req, res) {
-    // call authenticate function to check if password user entered is correct
-    User.authenticate(req.body.email, req.body.password, function(err, loggedInUser) {
-        if (err) {
-            console.log('authentication error: ', err);
-            res.status(500).send();
-        } else {
-            console.log('setting session user id ', loggedInUser._id);
-            req.session.userId = loggedInUser._id;
-            res.redirect('/profile');
-        }
-    });
-});
-
-// show user profile page
-app.get('/profile', verifyUserInSession, function(req, res) {
-    console.log('session user id: ', req.session.userId);
-    // find the user currently logged in
-    User.findOne({
-        _id: req.session.userId
-    }, function(err, currentUser) {
-        if (err) {
-            console.log('database error: ', err);
-            res.redirect('/login');
-        } else {
-            // render profile template with user's data
-            console.log('loading profile of logged in user');
-            res.render('user-show.ejs', {
-                user: currentUser
-            });
-        }
-    });
-});
-
-app.get('/logout', function(req, res) {
+app.get('/clear', function(req, res) {
+    console.log(res.cookies);
+    res.clearCookie('connect.sid');
     // remove the session user id
     req.session.userId = null;
     // redirect to login

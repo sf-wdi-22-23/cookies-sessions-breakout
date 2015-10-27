@@ -8,6 +8,7 @@ $(document).ready(function() {
 
     $.post('/session-form', formData, function(response) {
       console.log("server response is: ", response);
+      window.location.href = "/forms";
     })
   })
 
@@ -18,31 +19,28 @@ $(document).ready(function() {
 
     $.post('/cookie-form', formData, function(response) {
       console.log("server response is: ", response);
+      window.location.href = "/forms";
     })
   })
-  // $('#signup-form').on('submit', function(e) {
-  //   e.preventDefault();
 
-  //   // select the form and serialize its data
-  //   var signupData = $("#signup-form").serialize();
-  //   console.log(signupData);
-  //   // send POST request to /users with the form data
-  //   $.post('/users', signupData, function(response) {
-  //     console.log(response);
-  //   });
-  // });
+  $('#long-form').on('submit', function(e) {
+    e.preventDefault();
+    console.log("submitted session form");
+    var formData = $(this).serialize();
 
-  // $('#login-form').on('submit', function(e) {
-  //   e.preventDefault();
+    $.post('/long-form', formData, function(response) {
+      console.log("server response is: ", response);
+      window.location.href = "/forms";
+    })
+  })
 
-  //   // select the form and serialize its data
-  //   // note: this is the form because the event handler
-  //   //   was triggered from the form
-  //   var loginData = $(this).serialize();
-  //   // send POST request to /login with the form data
-  //   $.post('/login', loginData, function(response) {
-  //     console.log(response);
-  //   });
-  // });
+  $('#clear').on('click', function(e) {
+    e.preventDefault();
+    console.log("clearing cookies and sessions");
+    $('/clear', function(response) {
+      console.log(response);
+    })
+    window.location.href = "/forms";
+  })
 
 });

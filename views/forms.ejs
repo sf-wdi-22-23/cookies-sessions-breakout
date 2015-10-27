@@ -15,27 +15,45 @@
 </head>
 <body>
   <div class="container text-center">
+    <button id="clear">Clear Cookies and Sessions</button>
     <div class="row">
       <div class="col-md-4 col-md-offset-2">
         <h1>Your Session Form</h1>
         <form id="session-form">
           <label for="location">Location</label>
-          <input type="text" name="location" value="<%= formSession.location %>">
+          <input type="text" name="location">
           <label for="duration">Duration</label>
-          <input type="text" name="duration" value="<%= formSession.duration %>">
+          <input type="text" name="duration">
           <input type="submit">
+          <div id="current-session">
+            <p>Current session location is: <%= session.location %></p>
+            <p>Current session duration is: <%= session.duration %></p>
+          </div>
         </form>
       </div>
       <div class="col-md-4 col-md-offset-2">
         <h1>Your Cookie Form</h1>
         <form id="cookie-form">
           <label for="dough">Dough</label>
-          <input type="text" name="dough" value="<%= formCookie.dough %>">
+          <input type="text" name="dough" value="<%= cookie.dough %>">
           <label for="ingredient">Ingredient</label>
-          <input type="text" name="ingredient" value="<%= formCookie.ingredient %>">
+          <input type="text" name="ingredient" value="<%= cookie.ingredient %>">
           <input type="submit">
+          <div id="current-cookies">
+            <p>Current cookie dough is: <%= cookie.dough %></p>
+            <p>Current cookie ingredient is: <%= cookie.ingredient %></p>
+          </div>
         </form>
       </div>
+      <form id="long-form">
+        <input type="text" name="foo" value="<%= cookie.foo %>">
+        <input type="text" name="bar" value="<%= cookie.bar %>">
+        <input type="text" name="baz" value="<%= cookie.baz %>">
+        <input type="text" name="how" value="<%= cookie.how %>">
+        <input type="text" name="what" value="<%= cookie.what %>">
+        <input type="text" name="when" value="<%= cookie.when %>">
+        <input type="submit">
+      </form>
     </div>
   </div>
 </body>
